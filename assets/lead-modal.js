@@ -7,7 +7,7 @@
   // Токен бота от @BotFather (бот: @hyundai_fishing_bot)
   var TELEGRAM_BOT_TOKEN = '9117793742:AAHHx2x7Dh67NRhT78iwwwSJfTNZnVg6HCY';
   // Telegram ID менеджеров (или ID группы -100…). Каждый должен один раз нажать «Start» у бота.
-  var TELEGRAM_CHAT_IDS = ['5416315021', '344267820'];
+  var TELEGRAM_CHAT_IDS = ['5416315021', '577616964'];
 
   var overlay = document.getElementById('leadOverlay');
   if (!overlay) return;
