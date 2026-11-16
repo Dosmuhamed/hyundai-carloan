@@ -1,0 +1,8 @@
+/* hyundai.kz отдаёт телефонам и компьютерам разную разметку шапки.
+   В демо обе версии в одном файле и переключаются по ширине экрана (640px — как в стилях сайта). */
+@media screen and (min-width: 641px) {
+  .headerWrap .company, .headerWrap .mobile-menu { display: none; }
+}
+@media screen and (max-width: 640px) {
+  .headerWrap .top__header { display: none; }
+}

@@ -1,0 +1,97 @@
+/* ==========================================================================
+   Модальное окно заявки на автокредитование.
+   Построено на штатных классах сайта hyundai.kz:
+   .popup-content / .popup-header / .popup-title / .popup-form /
+   .form-row / .input-field / .errorMessage / .btn
+   ========================================================================== */
+
+/* Страница под окном: блокируется и размывается */
+.site { display: flex; flex-direction: column; flex: 1 0 auto; }
+body.lead-locked { overflow: hidden; }
+body.lead-locked .site { pointer-events: none; user-select: none; }
+
+/* Подложка (размытие через backdrop-filter, чтобы не ломать fixed-шапку сайта) */
+.lead-overlay {
+  position: fixed; inset: 0; z-index: 2147483000; /* выше шапки сайта (у неё 999999999) */
+  background: rgba(0, 0, 0, .55);
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem; overflow-y: auto;
+  animation: leadFade .3s ease both;
+}
+.lead-overlay.is-hidden { animation: leadFadeOut .3s ease both; pointer-events: none; }
+@keyframes leadFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes leadFadeOut { to { opacity: 0; } }
+@keyframes leadRise { from { opacity: 0; transform: translateY(2rem); } to { opacity: 1; transform: none; } }
+
+/* Окно */
+.lead-overlay .popup-content {
+  width: 100%; max-width: 56rem; margin: auto;
+  animation: leadRise .45s .05s cubic-bezier(.2, .8, .2, 1) both;
+}
+.lead-overlay .popup-img img { width: 100%; height: auto; aspect-ratio: 308 / 156; object-fit: cover; }
+.lead-overlay .popup-header { padding: 1.8rem 4rem; }
+.lead-overlay .popup-title { font-size: 2rem; line-height: 1.3; }
+.lead-overlay .popup-form { padding: 3rem 4rem 3.6rem; }
+.lead-overlay .popup-form .lead-text { font-size: 1.5rem; line-height: 1.5; color: #000; margin-bottom: 2.6rem; }
+
+.lead-overlay .form { display: block; }
+.lead-overlay .form .form-row { width: 100%; margin-bottom: 2rem; }
+.lead-overlay .input-field { height: 4.8rem; font-size: 1.6rem; color: #000; border-radius: 0; -webkit-appearance: none; }
+.lead-overlay .input-field::placeholder { color: #999; }
+.lead-overlay .input-field:focus { border-color: #002c5f; }
+.lead-overlay .form-row.error .input-field { border-color: red; }
+.lead-overlay .errorMessage { display: none; }
+.lead-overlay .form-row.error .errorMessage { display: block; }
+
+/* Согласие */
+.lead-consent { display: flex; gap: 1.2rem; align-items: flex-start; cursor: pointer; margin: .4rem 0 2.8rem; }
+.lead-consent input { position: absolute; opacity: 0; pointer-events: none; }
+.lead-consent .lead-box { flex: none; width: 2rem; height: 2rem; border: 1px solid #e4dcd3; background: #fff; display: grid; place-items: center; margin-top: .1rem; transition: .2s; }
+.lead-consent input:checked + .lead-box { background: #002c5f; border-color: #002c5f; }
+.lead-consent input:checked + .lead-box::after { content: ""; width: 1rem; height: .5rem; border: solid #fff; border-width: 0 0 2px 2px; transform: rotate(-45deg) translate(1px, -1px); }
+.lead-consent input:focus-visible + .lead-box { outline: 2px solid #00aad2; outline-offset: 2px; }
+.lead-consent .lead-consent-text { font-size: 1.3rem; line-height: 1.5; color: #666; }
+.lead-consent a { color: #002c5f; text-decoration: underline; }
+.lead-consent.error .lead-box { border-color: red; }
+
+.lead-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.lead-form-error { width: 100%; background: #fdecec; border-left: 3px solid red; color: #b00000; font-size: 1.4rem; line-height: 1.4; padding: 1rem 1.4rem; margin-bottom: 2rem; }
+.lead-form-error[hidden] { display: none; }
+
+.lead-overlay .btn { display: block; margin: 0 auto; min-width: 26rem; font-weight: 500; }
+.lead-overlay .btn[disabled] { opacity: .7; cursor: progress; }
+.lead-overlay .lead-call { text-align: center; font-size: 1.3rem; color: #666; margin-top: 2rem; }
+.lead-overlay .lead-call a { color: #002c5f; font-weight: 500; }
+
+/* Успешная отправка */
+.lead-success { display: none; text-align: center; animation: leadRise .4s ease both; }
+.lead-overlay.is-done .lead-success { display: block; }
+.lead-overlay.is-done .lead-step { display: none; }
+.lead-success .lead-check { width: 6.4rem; height: 6.4rem; border-radius: 50%; background: #002c5f; display: grid; place-items: center; margin: 1rem auto 2.4rem; }
+.lead-success .lead-check::after { content: ""; width: 2.4rem; height: 1.2rem; border: solid #fff; border-width: 0 0 3px 3px; transform: rotate(-45deg) translate(2px, -3px); }
+.lead-success .lead-success-title { font-size: 2.4rem; font-weight: 500; margin-bottom: 1.2rem; }
+.lead-success .lead-text { margin-bottom: 3rem !important; }
+
+/* Невысокие экраны ноутбуков: поля в две колонки, как в формах hyundai.kz,
+   чтобы окно поместилось целиком без прокрутки */
+@media (min-width: 768px) and (max-height: 860px) {
+  .lead-overlay .popup-form { padding: 2.4rem 4rem 2.8rem; }
+  .lead-overlay .popup-form .lead-text { margin-bottom: 1.6rem; }
+  .lead-overlay .form { display: flex; flex-wrap: wrap; justify-content: space-between; }
+  .lead-overlay .form .form-row { width: calc(50% - 1rem); margin-bottom: 1.4rem; }
+  .lead-consent { width: 100%; margin-bottom: 2rem; }
+  .lead-overlay .lead-call { display: none; }
+}
+
+/* Мобильная версия: окно выезжает снизу */
+@media (max-width: 767px) {
+  .lead-overlay { align-items: flex-end; padding: 0; }
+  .lead-overlay .popup-content { margin: 0; max-height: 100%; overflow-y: auto; box-shadow: none; }
+  .lead-overlay .popup-header { padding: 1.4rem 2rem; }
+  .lead-overlay .popup-title { font-size: 1.8rem; }
+  .lead-overlay .popup-form { padding: 2.2rem 2rem 2.4rem; }
+  .lead-overlay .popup-form .lead-text { font-size: 1.4rem; margin-bottom: 2rem; }
+  .lead-overlay .form .form-row { margin-bottom: 1.6rem; }
+  .lead-overlay .btn { width: 100%; min-width: 0; }
+}
